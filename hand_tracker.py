@@ -5,6 +5,25 @@ from mediapipe.tasks.python import BaseOptions
 from mediapipe.tasks.python.vision import RunningMode
 import time
 
+HAND_CONNECTIONS = [
+    # Thumb
+    (0, 1), (1, 2), (2, 3), (3, 4),
+
+    # Index finger
+    (0, 5), (5, 6), (6, 7), (7, 8),
+
+    # Middle finger
+    (0, 9), (9, 10), (10, 11), (11, 12),
+
+    # Ring finger
+    (0, 13), (13, 14), (14, 15), (15, 16),
+
+    # Pinky
+    (0, 17), (17, 18), (18, 19), (19, 20),
+
+    # Palm
+    (5, 9), (9, 13), (13, 17)
+]
 
 print("Levi Labs - Hand Tracker")
 base_options=BaseOptions(
@@ -43,6 +62,24 @@ while cap.isOpened():
     height,width, _=frame.shape
     if result.hand_landmarks:
         for hand in result.hand_landmarks:
+            for start,end in HAND_CONNECTIONS:
+                start_landmark=hand[start]
+                end_landmark=hand[end]
+
+                x1=int(start_landmark.x*width)
+                y1=int(start_landmark.y*height)
+
+                x2=int(end_landmark.x*width)
+                y2=int(end_landmark.y*height)
+
+                cv2.line(
+                    frame,
+                    (x1,y1),
+                    (x2,y2),
+                    (225,255, 0),
+                    2
+                )
+
             for landmark in hand:
                 x=int(landmark.x*width)
                 y=int(landmark.y*height)
